@@ -1,29 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="crypto.css">
+    <title>Crypto Tracker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="./crypto.css">
 </head>
-<body> 
-    <section>
-    <div class="main">
-        <div class="postreload">
-            <input type="text" id="input" placeholder="enter the crypto name">
-            <button id="btn" type="submit">search</button>
-            <div id="linechart_material" ></div>
+
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold mb-4">Crypto Tracker</h1>
+        <table class="coin-table">
+            <thead>
+                <tr>
+                    <th>Logo</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>High</th>
+                    <th>Low</th>
+                </tr>
+            </thead>
+            <tbody id="coins"></tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
+
+        <div id="chartModal">
+            <div class="modal-content">
+                <h2 id="modalCoinName"></h2>
+                <canvas id="coinChart"></canvas>
+                <button id="closeModal">Close</button>
+            </div>
         </div>
-        <div class="contain">
-            
-        <div class="preload">
-           
-        </div>
+
+        <script src="./index.js"></script>
     </div>
-        </div>
-</section>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="index.js"></script>
 </body>
+
 </html>

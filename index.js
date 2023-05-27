@@ -1,86 +1,141 @@
-let input = document.querySelector("#input")
-let btn = document.querySelector("#btn")
-let numarr = []
-let mainarr = []
-let newarr =[]
-let chart = document.querySelector("#linechart_material")
-btn.addEventListener("click", async () => {
-    chart.style.display = "grid"
-    const dadada =await input.value
-    const datad = dadada.toLowerCase()
-    let linkapi = `https://api.coingecko.com/api/v3/coins/${datad}/market_chart?vs_currency=inr&days=30&interval=daily`
-    const ingo = await fetch(linkapi)
-    const convert = await ingo.json()
-    let no
-    for (let i = 0; i < 30; i++) {
-        no= i
-        let to = Math.round(convert.prices[i][1])
-        numarr.push(no)
-        mainarr.push(to)
-    }
-    for(let j=0;j<30;j++){
-        arrne = [numarr[j],mainarr[j]]
-        newarr.push(arrne)
-    }
-    console.log(newarr)
-    google.charts.load('current',  {packages:['corechart', 'line']});
-    google.charts.setOnLoadCallback(drawChart);
+const coinsContainer = document.getElementById('coins');
+const paginationContainer = document.getElementById('pagination');
+const coinChartContainer = document.getElementById('chartModal');
+const coinChart = document.getElementById('coinChart').getContext('2d');
+const coinsPerPage = 10;
+let currentPage = 1;
+let selectedCoin = null;
+let chart = null;
 
-    google.charts.load('current', {'packages':['line']});
-    google.charts.setOnLoadCallback(drawChart);
+// Fetch data from CoinGecko API
+fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=30')
+  .then(response => response.json())
+  .then(data => {
+    renderCoins(data);
+    renderPagination(data);
+  })
+  .catch(error => console.log(error));
 
-  function drawChart() {
-
-    var data = new google.visualization.DataTable();
-    data.addColumn('number', 'Day');
-    data.addColumn('number', 'price in last 30 days');
-   
-    data.addRows(newarr);
-
-    var options = {
-      chart: {
-        title: 'crypto price chart',
-        subtitle: 'up and down of crypto'
-      },
-      width: 800,
-      height: 500
-    };
-
-    var chart = new google.charts.Line(document.getElementById('linechart_material'));
-
-    chart.draw(data, google.charts.Line.convertOptions(options));
-  }
-})
-let linkapi = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false"
-
-//data to show the list
-async function preload() {
-    const data = await fetch(linkapi)
-    const convert = await data.json()
-    for (let i = 0; i < 75; i++) {
-        const current_price = convert[i]['current_price']
-        const price_change_percentage_24h = convert[i]['price_change_percentage_24h']
-        const market_cap = convert[i]['market_cap']
-        const name = convert[i]['name']
-        const ath = convert[i]['ath']
-        const image = convert[i]['image']
-        /*opend.push(opened)
-        low.push(low_at)
-        high.push(high_at)*/
-        const div = document.getElementsByClassName("preload")[0]
-        let htmlcon = document.createElement("div")
-        htmlcon.setAttribute("class", "danger")
-        let intohtml = `<div class="sfori" >
-        <img class="dataimg" src="${image}" alt="">
-        </div>
-        <p>name- <br>${name}</p>
-        <p>market cap- <br>${market_cap}</p>
-        <p>price change- <br> ${price_change_percentage_24h}</p>
-        <p>current price rs- <br> ${current_price}</p>
-        <p>ath- <br> ${ath}</p>
-        `
-        htmlcon.innerHTML = intohtml
-        div.appendChild(htmlcon)
-    }
+function openChartModal() {
+  coinChartContainer.style.display = 'block';
+  document.getElementById('modalCoinName').innerText = selectedCoin.name;
 }
-preload()
+
+
+function renderChart() {
+  if (selectedCoin) {
+    // Fetch historical price data for selected coin (last 30 days)
+    fetch(`https://api.coingecko.com/api/v3/coins/${selectedCoin.id}/market_chart?vs_currency=usd&days=30`)
+      .then(response => response.json())
+      .then(data => {
+        const coinPriceData = data.prices.map(price => price[1]);
+
+        if (chart) {
+          // Update existing chart
+          chart.data.labels = Array.from({ length: coinPriceData.length }, (_, i) => i + 1);
+          chart.data.datasets[0].data = coinPriceData;
+          chart.update();
+        } else {
+          // Create new chart
+          chart = new Chart(coinChart, {
+            type: 'line',
+            data: {
+              labels: Array.from({ length: coinPriceData.length }, (_, i) => i + 1),
+              datasets: [
+                {
+                  label: 'Price (USD)',
+                  data: coinPriceData,
+                  backgroundColor: 'rgba(90, 83, 110, 0.5)',
+                  borderColor: 'rgba(90, 83, 110, 1)',
+                  borderWidth: 1
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: false
+                }
+              }
+            }
+          });
+        }
+      })
+      .catch(error => console.log(error));
+  } else {
+    coinChartContainer.style.display = 'none';
+  }
+}
+function renderCoins(data) {
+  coinsContainer.innerHTML = '';
+
+  const startIndex = (currentPage - 1) * coinsPerPage;
+  const endIndex = startIndex + coinsPerPage;
+
+  data.slice(startIndex, endIndex).forEach(coin => {
+    const coinRow = document.createElement('tr');
+
+    const coinLogoCell = document.createElement('td');
+    const coinImage = document.createElement('img');
+    coinImage.className = 'coin-image';
+    coinImage.src = coin.image;
+    coinLogoCell.appendChild(coinImage);
+    coinRow.appendChild(coinLogoCell);
+
+    const coinNameCell = document.createElement('td');
+    coinNameCell.innerText = coin.name;
+    coinNameCell.addEventListener('click', () => {
+      selectedCoin = coin;
+      openChartModal();
+      renderChart();
+    });
+    coinRow.appendChild(coinNameCell);
+
+    const coinPriceCell = document.createElement('td');
+    coinPriceCell.innerText = coin.current_price;
+    coinRow.appendChild(coinPriceCell);
+
+    const coinHighCell = document.createElement('td');
+    coinHighCell.innerText = coin.high_24h;
+    coinRow.appendChild(coinHighCell);
+
+    const coinLowCell = document.createElement('td');
+    coinLowCell.innerText = coin.low_24h;
+    coinRow.appendChild(coinLowCell);
+
+    coinsContainer.appendChild(coinRow);
+  });
+  renderPaginationButtons(totalPages);
+}
+
+function renderPagination(data) {
+  paginationContainer.innerHTML = '';
+
+  const totalPages = Math.ceil(data.length / coinsPerPage);
+
+  for (let i = 1; i <= totalPages; i++) {
+
+
+    function renderPaginationButtons(totalPages) {
+      paginationContainer.innerHTML = '';
+
+      for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement('button');
+        button.innerText = i;
+        button.className = `pagination-button ${currentPage === i ? 'active' : ''}`;
+        button.addEventListener('click', () => {
+          currentPage = i;
+          renderCoins(data);
+        });
+
+        paginationContainer.appendChild(button);
+      }
+    }
+    document.getElementById('closeModal').addEventListener('click', () => {
+      coinChartContainer.style.display = 'none';
+      selectedCoin = null;
+    });
+  }
+}

@@ -1,94 +1,116 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-*{
-    padding: 0;
-    margin: 0;
-    font-family: 'Bebas Neue', cursive;
+body {
+    background-color: #2c2735;
+    color: #d9d2e9;
 }
-body{
-    background-color: rgb(228, 206, 177);
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
-.preload::-webkit-scrollbar {
-    display: none;
-  }
-.contain{
-    display: grid;
-    place-content: center;
-    align-items: center;
-    margin: auto;
-    height: 60vh;
-    background-color: antiquewhite;
+
+.coin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
 }
-.preload{
-    height:40vh;
-    width:80vw;
-    overflow-y: scroll;
-    align-items: center;
+
+.coin-table th,
+.coin-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #5a536e;
+}
+
+.coin-table th {
+    background-color: #443e57;
+    font-weight: 600;
+}
+
+.coin-image {
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+}
+
+.coin-name {
+    font-weight: 500;
+}
+
+.coin-price {
+    font-weight: 500;
+}
+
+.coin-high,
+.coin-low {
+    font-weight: 400;
+}
+
+.pagination {
     display: flex;
-    flex-direction: column;
-    margin: auto;
+    justify-content: center;
+    margin-top: 16px;
 }
-#input{
-    font-size: 20px;
-    text-align: center;
-    border-radius: 20px;
+
+.pagination-button {
+    margin: 0 4px;
+    padding: 6px 10px;
+    background-color: #5a536e;
     border: none;
-    border-bottom: 1px solid black;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #d9d2e9;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
 }
-#btn{
-    font-size: 18px;
-    text-align: center;
-    border-radius: 20px;
-    border: none;
-    height:6vh;
+
+.pagination-button.active {
+    background-color: #8d82a1;
 }
-.danger{
-    display: grid;
-    grid-template-columns: auto auto auto  auto auto auto;
-    height:11vh;
-    width:68.5vw;
-    font-size: 22px;
-    background-color: rgb(216, 213, 209);
-    align-items: center;
-    border-bottom: 1px solid black;
-    border-radius: 20px;
-}
-.dataimg {
-    height: 9vh;
-width:5vw;
-object-fit: cover;
-align-items: center;
-}
-.sfori{
-    align-items: center;
-    display: grid;
-    place-content: center;
-}
-.dataimg img{
-    height: 6vh;
-width:6vw;
-object-fit: cover;
-align-items: center;
-}
-.postreload{
-    width: 97%;
-    display: grid;
-    padding: 2rem;
-    grid-template-columns: auto auto;
-    place-content: center;
-}
-.postreload input{
-    width:30vw;
-    height: 4vh;
-}
-#btn{
-    width:9vw;
-    height: 4vh;
-}
-#linechart_material{
-    height:500px;
+
+#chartModal {
     display: none;
-    width:658px;
-    padding: 2rem;
-    background-color: antiquewhite;
-    overflow-x: scroll;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+}
+
+.modal-content {
+    background-color: #2c2735;
+    color: #d9d2e9;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 600px;
+    width: 100%;
+    max-height: 400px;
+    padding: 20px;
+    text-align: center;
+}
+
+#coinChart {
+    margin-top: 16px;
+}
+
+#closeModal {
+    margin-top: 16px;
+    background-color: #5a536e;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #d9d2e9;
+    cursor: pointer;
+    padding: 6px 10px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+#closeModal:hover {
+    background-color: #8d82a1;
 }
